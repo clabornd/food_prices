@@ -2,9 +2,13 @@ source("requirements.R")
 
 food_data <- read_csv("Data/WFPVAM_FoodPrices_24-7-2017.csv")
 
-food_data <- food_data %>% mutate(Date = as.Date(paste(as.character(mp_year), as.character(mp_month), "1", sep = "-"))) %>%
-    group_by(Date, cm_id) %>%
-    mutate(mean_price = mean(mp_price))
+simple_list <- list("bread", "wheat", "rice", "wage", "milk", "beans", "potatoes", "meat", "lentils", "sugar", "oil", "fuel", "fish", "maize")
+
+food_data_clean <- food_data_clean %>% mutate(Date = as.Date(paste(as.character(mp_year), as.character(mp_month), "1", sep = "-"))) %>%
+    group_by(Date, staples) %>%
+    mutate(mean_price = mean(mp_price)) %>%
+    filter(grepl(paste(unlist(simple_list), collapse = "|"), staples, ignore.case = TRUE) == TRUE) %>%
+    mutate(staples = tolower(staples))
 
 countries <- as.list(unique(food_data$adm0_name))
 foods <- as.list(unique(food_data$cm_name))
