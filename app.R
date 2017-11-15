@@ -1,17 +1,9 @@
 source("requirements.R")
 
-food_data <- read_csv("Data/WFPVAM_FoodPrices_24-7-2017.csv")
-
-simple_list <- list("bread", "wheat", "rice", "wage", "milk", "beans", "potatoes", "meat", "lentils", "sugar", "oil", "fuel", "fish", "maize")
-
-food_data_clean <- food_data_clean %>% mutate(Date = as.Date(paste(as.character(mp_year), as.character(mp_month), "1", sep = "-"))) %>%
-    group_by(Date, staples) %>%
-    mutate(mean_price = mean(mp_price)) %>%
-    filter(grepl(paste(unlist(simple_list), collapse = "|"), staples, ignore.case = TRUE) == TRUE) %>%
-    mutate(staples = tolower(staples))
+food_data <- read_csv("Data/food_data_clean.csv")
 
 countries <- as.list(unique(food_data$adm0_name))
-foods <- as.list(unique(food_data$cm_name))
+foods <- as.list(unique(food_data$staples))
 
 ggthemr("dust")
 
@@ -40,8 +32,8 @@ ui <- fluidPage(
 server <- function(input, output, session){
   
   observeEvent(input$countries,{  
-    updateSelectInput(session, "foods", label = "Choose Foods",
-                      choices = as.list(unique((food_data %>% filter(adm0_name %in% input$countries))$cm_name))
+    updateSelectInput(session, "foods", label = "Choose Commodity",
+                      choices = as.list(unique((food_data %>% filter(adm0_name %in% input$countries))$staples))
     )
   })
   
@@ -52,7 +44,7 @@ server <- function(input, output, session){
     input$updateplot
     
     isolate({
-      p <- food_data %>% filter(adm0_name %in% input$countries, cm_name == input$foods) %>%
+      p <- food_data %>% filter(adm0_name %in% input$countries, staples == input$foods) %>%
       ggplot(aes(Date, mean_price, color = adm0_name)) + geom_line() + 
       labs(y ="Average Price", color = "Country")
     print(p)
