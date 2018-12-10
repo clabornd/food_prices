@@ -4,6 +4,7 @@ food_data <- read_csv("Data/WFPVAM_FoodPrices_24-7-2017.csv")
 
 food_data <- food_data %>% mutate(Date = as.Date(paste(as.character(mp_year), as.character(mp_month), "1", sep = "-")))
 
+syria_2017 <- food_data %>% filter(adm0_name == "Syrian Arab Republic", year(Date) == 2017)
 
 food_data %>% group_by(Date, cm_id) %>%
   mutate(mean_price = mean(mp_price)) %>%
