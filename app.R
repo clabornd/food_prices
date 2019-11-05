@@ -1,18 +1,27 @@
+##### A simple test app based on the WFPVAM food prices dataset #####
+
 suppressPackageStartupMessages({
   source("requirements.R", local = TRUE)
 })
 
 source("plot_fns.R")
 
+### static objects
 food_data <- read_csv("Data/food_data_2015-2018.csv") %>%
   select(-contains("_id")) 
-countries <- as.list(unique(food_data$adm0_name))
-divisions <- colnames(food_data)[-which(colnames(food_data) %in% c("mean_price", "Date", "mp_price"))]
-foods <- as.list(unique(food_data$staples))
 
+countries <- as.list(unique(food_data$adm0_name))
+
+divisions <- colnames(food_data)[-which(colnames(food_data) %in% c("mean_price", "Date", "mp_price"))]
+
+foods <- as.list(unique(food_data$staples))
+###
+
+#####
 ui <- navbarPage("Test Some Food Prices.....", id = "top_page",
   
       tabPanel("Plotsss",
+        # basic plots
         fluidRow(id = "basic_plot_fluidRow",
           column(width = 4,
                  
@@ -31,7 +40,7 @@ ui <- navbarPage("Test Some Food Prices.....", id = "top_page",
             plotOutput("mainplot")
           )
         ),
-        
+        #trelliscope
         fluidRow(id = "trelliscope_fluidRow",
           column(width = 4,
                  
@@ -67,12 +76,14 @@ server <- function(input, output, session){
   revals <- reactiveValues("N1" = 1, "N2" = 1, "N3" = 1, 
                            reac_df1 = data.frame(x = 0, y = 1), reac_df2 = data.frame(x = 0, y = 1), reac_df3 = data.frame(x = 0, y = 1))
   
+  # display foods for currently selected country
   observeEvent(input$countries,{  
     updateSelectInput(session, "foods", label = "Choose Commodity",
                       choices = as.list(unique((food_data %>% filter(adm0_name %in% input$countries))$staples))
     )
   })
   
+  # just basic plot functionality
   output$mainplot <- renderPlot({
     
     input$updateplot
@@ -83,7 +94,8 @@ server <- function(input, output, session){
     
     })
   })
-
+  
+  # Make a trelliscope display on button click
   output$trelliscope_out <- renderTrelliscope({
     if(input$make_trelliscope == 0){
       NULL
@@ -91,16 +103,15 @@ server <- function(input, output, session){
     else{
       isolate(
         food_data %>% 
-          group_by(!!rlang::sym(input$division_1), Date) %>%
-          slice(1) %>% ungroup() %>%
           group_by(!!rlang::sym(input$division_1)) %>%
           nest() %>%
-          mutate(plot = map_plot(data, mean_price_v_time)) %>%
+          mutate(plot = map_plot(data, price_v_time)) %>%
           trelliscope("display1", self_contained = TRUE, width = 800)
       ) 
     }
   })
   
+  # test random outputs
   lapply(1:3, function(i){
     output[[paste0("output", i)]] <- renderText(paste0("<div style = color:blue>This is a number:  ",revals[[paste0("N",as.character(i))]],"</div>"))
     output[[paste0("numplot", i)]] <- renderPlot({
@@ -108,6 +119,7 @@ server <- function(input, output, session){
     })
   })
   
+  ## Testing shinytest ##
   # observers which add the values of the other two reactive values to the current value
   # priority controls who the leader is
   observeEvent(input$addup,{

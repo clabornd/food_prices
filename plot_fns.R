@@ -3,7 +3,8 @@ price_v_time <- function(df){
   labs(y = "Price", x = "Date")
 }
 
-mean_price_v_time <- function(df){
-  ggplot(df, aes(x = Date, y = mean_price)) + geom_line() +
-    labs(y = "Price", x = "Date")
-}
+# 
+# mean_price_v_time <- function(df){
+#   ggplot(df, aes(x = Date, y = mean_price)) + geom_line() +
+#     labs(y = "Price", x = "Date")
+# }
