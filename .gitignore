@@ -5,3 +5,5 @@
 desktop.ini
 packrat/lib*/
 packrat/src/
+Data/*
+!Data/food_data_2015-2018.csv
