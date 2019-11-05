@@ -1,9 +1,0 @@
--Perform Aggregation for Similar resources
-
--Implement Forecasting Option in plots.
-
--Clean up plotting code to look nicer.
-
--Update Plot With Button.
-
-Commodities to keep:  milk, eggs, bread, wheat, rice, 

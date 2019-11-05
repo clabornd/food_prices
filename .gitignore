@@ -2,5 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+desktop.ini
 packrat/lib*/
 packrat/src/
